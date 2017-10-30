@@ -12,7 +12,7 @@ class UserInfo(models.Model):
 
 class Survey(models.Model):
     title = models.CharField("问卷名称", max_length=128)
-    date = models.DateTimeField("创建日期", auto_created=True)
+    date = models.DateField("创建日期", auto_now_add=True)
 
     def __str__(self):
         return self.title
@@ -51,7 +51,11 @@ class TextArea(models.Model):
 
 class Choice(models.Model):
     title = models.CharField("选项名称", max_length=128)
-    is_checked = models.BooleanField("是否选中", default=False)
+    status_choices=[
+        (0,"false"),
+        (1,"true"),
+    ]
+    status = models.SmallIntegerField("是否选中",choices=status_choices,default=0)
     choice_box = models.ForeignKey(to="ChoiceBox", verbose_name="所属问题")
 
     def __str__(self):

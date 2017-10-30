@@ -122,3 +122,29 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# ############################## RBAC权限相关配置开始 ##############################
+# session中保存权限信息的Key
+RBAC_PERMISSION_URL_SESSION_KEY = "rbac_permission_url_session_key"
+
+# Session中保存菜单和权限信息的Key
+RBAC_MENU_PERMISSION_SESSION_KEY = "rbac_menu_permission_session_key"
+RBAC_MENU_KEY = "rbac_menu_key"
+RBAC_MENU_PERMISSION_KEY = "rbac_menu_permission_key"
+
+# 匹配URL时指定规则
+RBAC_MATCH_PARTTERN = "^{0}$"
+
+# 无需权限控制的URL
+RBAC_NO_AUTH_URL = [
+    '/login/',
+    "/index/",
+]
+
+# 无权访问时，页面提示信息
+RBAC_PERMISSION_MSG = "无权限访问"
+
+# 菜单主题
+RBAC_THEME = "default"
+# ############################## RBAC权限相关配置结束 ##############################

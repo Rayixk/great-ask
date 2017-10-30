@@ -16,8 +16,11 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from arya.service import sites
+from survey import views
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^arya/', sites.site.urls),
+    url(r'^login/', views.login),
+    url(r'^index/', views.index),
 ]
