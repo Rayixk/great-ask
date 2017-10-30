@@ -1,13 +1,13 @@
 from django.db import models
+from rbac.models import User
 
 
 class UserInfo(models.Model):
-    username = models.CharField("用户名", max_length=32)
-    password = models.CharField("密码", max_length=64)
-    name = models.CharField("姓名", max_length=32, null=True, blank=True)
+    user = models.OneToOneField(to=User,verbose_name="用户账号")
+    name = models.CharField("姓名", max_length=32)
 
     def __str__(self):
-        return self.name if self.name else self.username
+        return self.name
 
 
 class Survey(models.Model):
