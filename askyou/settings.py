@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'survey.apps.SurveyConfig',
     'arya.apps.AryaConfig',
+    'rbac.apps.RbacConfig',
 ]
 
 MIDDLEWARE = [
