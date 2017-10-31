@@ -10,11 +10,26 @@ class UserInfo(models.Model):
         return self.name
 
 
+class Student(models.Model):
+    user = models.OneToOneField(to="UserInfo", verbose_name="学生姓名")
+    class_list = models.ManyToManyField(to="ClassList", verbose_name="以报班级")
+
+    def __str__(self):
+        return self.user.name
+
+class ClassList(models.Model):
+    """班级"""
+    name = models.CharField("班级名称", max_length=32)
+
+    def __str__(self):
+        return self.name
+
 class Survey(models.Model):
     title = models.CharField("问卷名称", max_length=128)
     date = models.DateField("创建日期", auto_now_add=True)
     choice_boxes = models.ManyToManyField(to="ChoiceBox", verbose_name="选择题")
     input_boxes = models.ManyToManyField(to="InputBox", verbose_name="填空题")
+    class_list = models.ManyToManyField(to="ClassList", verbose_name="所属班级")
 
     def __str__(self):
         return self.title
@@ -27,7 +42,7 @@ class ChoiceBox(models.Model):
         (2, "多选"),
     ]
     type = models.SmallIntegerField("选择题类型", choices=type_choices, default=1)
-    choices = models.ManyToManyField(to="Choice",verbose_name="选项")
+    choices = models.ManyToManyField(to="Choice", verbose_name="选项")
 
     def __str__(self):
         return self.title
