@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^arya/', sites.site.urls),
     url(r'^login/', views.login),
     url(r'^index/', views.index),
+    url(r'^survey/(\d+)$', views.show_survey),
 ]

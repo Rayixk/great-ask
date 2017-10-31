@@ -17,3 +17,10 @@ def login(request):
 def index(request):
     return render(request,"index.html")
 
+
+def show_survey(request,survey_id):
+    context = {
+        "survey_id":survey_id,
+    }
+    return render(request,"show_survey.html",context)
+

@@ -13,6 +13,25 @@ sites.site.register(models.UserInfo, UserInfoConfig)
 
 
 class SurveyConfig(sites.AryaConfig):
+    # def generate_survey(self, request):
+    #
+    #     pass
+    #
+    # generate_survey.short_description = "生成问卷"
+    # actions = [generate_survey,]
+
+    def generate_survey(self):
+        from django.shortcuts import HttpResponse
+        return HttpResponse("xxxxxx")
+
+    def extra_urls(self):
+        from django.conf.urls import url
+        patterns = [
+            url(r'^generate_survey$', SurveyConfig.generate_survey)
+        ]
+
+        return patterns
+
     list_display = ['title']
 
 

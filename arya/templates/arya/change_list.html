@@ -78,7 +78,7 @@
         {% endif %}
         <!-- 定制模糊搜索 结束 -->
 
-        <form method="post" class="form-horizontal">
+        <form method="post" class="form-horizontal" onsubmit="return check()">
             {% csrf_token %}
             <div class="row">
 
@@ -122,5 +122,17 @@
 
         })
 
+        function check() {
+            if($('#actionSelect').val()==="generate_survey"){
+                var ss = $('#headCheckBox').parent().parent().parent().next().find(':checked')
+                if(ss.length!==1){
+                    alert("请勿同时选择多份");
+                    return false
+                }
+{#                console.log#}
+
+
+            }
+        }
     </script>
 {% endblock %}
