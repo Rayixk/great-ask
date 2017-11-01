@@ -8,3 +8,7 @@ import re
 # res = re.match(p,s)
 # if res:
 #     print(res.group(1))
+a = 'single_choice3'
+b = 'single_choice'
+res = a.split(b)
+print(res)

@@ -69,7 +69,7 @@ class Choice(models.Model):
 
 class InputRecord(models.Model):
     """填空题记录表"""
-    user = models.ForeignKey(to="UserInfo", verbose_name="用户")
+    user = models.ForeignKey(to="Student", verbose_name="用户")
     survey = models.ForeignKey(to="Survey", verbose_name="问卷")
     question = models.ForeignKey(to="InputBox", verbose_name="问题")
     answer = models.CharField("答案", max_length=512)
@@ -77,7 +77,7 @@ class InputRecord(models.Model):
 
 class ChoiceRecord(models.Model):
     """选择题记录表"""
-    user = models.ForeignKey(to="UserInfo", verbose_name="用户")
+    user = models.ForeignKey(to="Student", verbose_name="用户")
     survey = models.ForeignKey(to="Survey", verbose_name="问卷")
     question = models.ForeignKey(to="ChoiceBox", verbose_name="问题")
     answer = models.ForeignKey(to="Choice")

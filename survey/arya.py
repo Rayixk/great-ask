@@ -74,12 +74,14 @@ sites.site.register(models.ChoiceRecord, ChoiceRecordConfig)
 
 
 class ClassListConfig(sites.AryaConfig):
-    list_display = ["name",]
+    list_display = ["name", ]
+
+
 sites.site.register(models.ClassList, ClassListConfig)
 
-class StudentConfig(sites.AryaConfig):
 
-    def class_list(self,obj=None, is_header=False):
+class StudentConfig(sites.AryaConfig):
+    def class_list(self, obj=None, is_header=False):
         if is_header:
             return '以报班级'
         classes = obj.class_list.all()
@@ -89,6 +91,21 @@ class StudentConfig(sites.AryaConfig):
             result.append(tpl)
         return mark_safe(" ".join(result))
 
-    list_display = ["user",class_list]
+    list_display = ["user", class_list]
+
 
 sites.site.register(models.Student, StudentConfig)
+
+
+class InputRecordConfig(sites.AryaConfig):
+    list_display = ["user","survey", "question", "answer"]
+
+
+sites.site.register(models.InputRecord, InputRecordConfig)
+
+
+class ChoiceRecordConfig(sites.AryaConfig):
+    list_display = ["user", "survey", "question", "answer"]
+
+
+sites.site.register(models.ChoiceRecord, ChoiceRecordConfig)
