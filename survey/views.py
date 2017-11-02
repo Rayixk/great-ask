@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, redirect, HttpResponse
 from rbac import models as rbac_models
 from rbac.service.rbac import initial_permission
@@ -118,3 +120,8 @@ def show_survey(request, survey_id):
     }
 
     return render(request, "show_survey.html", context)
+
+def save_survey_data(request):
+    print(request.POST)
+    response = {"status":True}
+    return HttpResponse(json.dumps(response))

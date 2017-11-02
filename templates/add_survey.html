@@ -14,7 +14,8 @@
             margin-left: 10px;
             border: none;
             background-color: transparent;
-            display: inline-block
+            display: inline-block;
+
         }
     </style>
 {% endblock %}
@@ -22,9 +23,10 @@
     <div class="row ">
         <div style="text-align: right;padding: 25px 40px 20px 0">
             <button class="btn btn-success" onclick="addOneItem()">添加</button>
-            <button class="btn btn-primary">保存</button>
+            <button class="btn btn-primary" onclick="save()">保存</button>
         </div>
         <table class="table table-hover">
+            {% csrf_token %}
             <tbody id="tBody">
             <tr>
                 <td>
@@ -46,16 +48,21 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">类型:</label>
                             <div class="col-sm-10">
-                                <select class="form-control" style="width: 200px;display: inline-block">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
+                                <select onchange="selectChange(this)" class="form-control" style="width: 200px;display: inline-block">
+                                    {% for type_choice in type_choices %}
+                                        <option value="{{ type_choice.0 }}">{{ type_choice.1 }}</option>
+                                    {% endfor %}
+
+{#                                    <option>1</option>#}
+{#                                    <option>2</option>#}
+{#                                    <option>3</option>#}
+{#                                    <option>4</option>#}
+{#                                    <option>5</option>#}
                                 </select>
                                 <a href="javascript:void(0)" style="text-decoration: none;" onclick="addOneChoice(this)" class="add-one-choice">
                                     <span class="glyphicon glyphicon-plus"></span>添加选项
                                 </a>
+                                <span class="hide" style="margin-left: 10px;color: red">请添加选项</span>
                                 <ul style="margin-top: 20px;padding-left: 15px">
 {#                                    <li style="margin-top: 10px">内容: <input type="text">#}
 {#                                        <a onclick="removeOneChoice(this)" href="javascript:void(0)"#}
@@ -85,24 +92,97 @@
         </li>
     </div>
 
+    <!--something to clone end-->
+
+
     <script>
         function removeOneChoice(self) {
             $(self).parent().remove()
         }
         function addOneChoice(self) {
-            if ($(self).next().children().length > 0) {
-                $(self).next().children().last().clone().appendTo($(self).next())
+            $(self).next().addClass("hide")
+            if ($(self).next().next().children().length > 0) {
+                $(self).next().next().children().last().clone().appendTo($(self).next().next())
             } else {
-                $("#hideElement li").clone().appendTo($(self).next())
+                $("#hideElement li").clone().appendTo($(self).next().next())
             }
         }
 
         function removeOneItem(self) {
-            $(self).parent().parent().parent().remove()
+            if ($("#tBody").children("tr").length === 1) {
+                alert("您的问卷至少得有一个问题吧!")
+            }else{
+                $(self).parent().parent().parent().parent().remove()
+            }
         }
         
         function addOneItem() {
-           $("#tBody").children().last().clone().appendTo($("#tBody"))
+            var $item = $("#tBody").children().last().clone();
+            $item.find("select").next().show();
+            $item.appendTo($("#tBody"))
+        }
+
+        /*
+         * select状态改变时,右侧的添加按钮显示或者不显示
+         */
+        function selectChange(self) {
+            if($(self).val()==="1"|| $(self).val()==="2"){
+                $(self).next().show()
+            }else{
+                $(self).next().hide()
+                //ul 中的li 清理掉 & 请添加选项 不显示
+                $(self).siblings("span").addClass("hide")
+                $(self).siblings("ul").empty()
+            }
+        }
+
+        /*
+         * 保存按钮,发ajax保存数据
+         */
+        function save() {
+            var questions = [];
+            var allHaveDone = true;//主要用来标志是否有选择题没有添加选项
+            $("textarea").each(function (k,v) {
+                var question={}
+                var questionName = $(this).val().trim()
+                var $questionTypeEle = $(this).parent().parent().next().find("select")
+                var questionType = $questionTypeEle.val()
+
+                question["name"]=questionName
+                question["type"]=questionType
+
+                if(questionType==="1" ||questionType==="2"){
+                    if($questionTypeEle.siblings("ul").find("li").length===0){
+                        $questionTypeEle.siblings("span").removeClass("hide")
+                        allHaveDone = false
+                    }else{
+                        $questionTypeEle.siblings("span").addClass("hide")
+                        question["choices"] = []
+                        $questionTypeEle.siblings("ul").find("li").each(function () {
+                            question["choices"].push($(this).find(":text").val())
+                        })
+
+                    }
+                }
+                questions.push(question)
+            });
+
+            if(!allHaveDone){
+                return
+            }
+
+            $.ajax({
+                url:"/survey/save_survey_data/",
+                type: "POST",
+                data: {"questions":JSON.stringify(questions),"csrfmiddlewaretoken":$('[name="csrfmiddlewaretoken"]').val()},
+                dataType:"JSON",
+                success:function (data) {
+                    alert("111")
+                }
+            });
+
+            console.log(questions)
+
         }
     </script>
 
@@ -113,22 +193,3 @@
 {% endblock %}
 
 
-{#{% load static %}#}
-{#<!DOCTYPE html>#}
-{#<html lang="en">#}
-{#<head>#}
-{#    <meta charset="UTF-8">#}
-{#    <title>Title</title>#}
-{#    <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.css' %}">#}
-{#    <style>#}
-{#    </style>#}
-{#</head>#}
-{#<body>#}
-{##}
-{#<div class="container">#}
-{##}
-{#    #}
-{#</div>#}
-{##}
-{#</body>#}
-{#</html>#}

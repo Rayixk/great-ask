@@ -2,6 +2,7 @@
 from django.utils.safestring import mark_safe
 from django.shortcuts import HttpResponse,render
 
+from survey.models import SurveyItem
 from . import models
 from arya.service import sites
 
@@ -17,7 +18,11 @@ class SurveyConfig(sites.AryaConfig):
     list_display = ['title']
 
     def add_view(self, request, *args, **kwargs):
-        return render(request,"add_survey.html")
+        type_choices = SurveyItem.type_choices
+        context={
+            "type_choices":type_choices,
+        }
+        return render(request,"add_survey.html",context)
 
 
 sites.site.register(models.Survey, SurveyConfig)
