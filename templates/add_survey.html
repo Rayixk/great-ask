@@ -1,0 +1,134 @@
+{% extends "arya/layout.html" %}
+
+{% block css %}
+    <style>
+        .delete-one-choice {
+            margin-left: 10px;
+            color: #CCCACB;
+            border: none;
+            background-color: transparent
+        }
+
+        .add-one-choice {
+            color: #337AB7;
+            margin-left: 10px;
+            border: none;
+            background-color: transparent;
+            display: inline-block
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row ">
+        <div style="text-align: right;padding: 25px 40px 20px 0">
+            <button class="btn btn-success" onclick="addOneItem()">添加</button>
+            <button class="btn btn-primary">保存</button>
+        </div>
+        <table class="table table-hover">
+            <tbody id="tBody">
+            <tr>
+                <td>
+                    <div class="form-horizontal">
+                        <!--右侧的删除-->
+                        <div style="text-align: right;padding-right: 20px">
+                            <a onclick="removeOneItem(this)" href="javascript:void(0)"
+                               class="delete-one-choice">
+                                <span class="glyphicon glyphicon-remove" style="font-size: 17px"></span>
+                            </a>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">问题:</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" rows="2" style="width: 600px"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">类型:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" style="width: 200px;display: inline-block">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </select>
+                                <a href="javascript:void(0)" style="text-decoration: none;" onclick="addOneChoice(this)" class="add-one-choice">
+                                    <span class="glyphicon glyphicon-plus"></span>添加选项
+                                </a>
+                                <ul style="margin-top: 20px;padding-left: 15px">
+{#                                    <li style="margin-top: 10px">内容: <input type="text">#}
+{#                                        <a onclick="removeOneChoice(this)" href="javascript:void(0)"#}
+{#                                           class="delete-one-choice">#}
+{#                                            <span class="glyphicon glyphicon-remove"></span>#}
+{#                                        </a>#}
+{#                                    </li>#}
+                                </ul>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!--something to clone-->
+    <div class="hide" id="hideElement">
+        <li style="margin-top: 10px">
+            内容: <input type="text">
+            <a onclick="removeOneChoice(this)" href="javascript:void(0)" class="delete-one-choice">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
+        </li>
+    </div>
+
+    <script>
+        function removeOneChoice(self) {
+            $(self).parent().remove()
+        }
+        function addOneChoice(self) {
+            if ($(self).next().children().length > 0) {
+                $(self).next().children().last().clone().appendTo($(self).next())
+            } else {
+                $("#hideElement li").clone().appendTo($(self).next())
+            }
+        }
+
+        function removeOneItem(self) {
+            $(self).parent().parent().parent().remove()
+        }
+        
+        function addOneItem() {
+           $("#tBody").children().last().clone().appendTo($("#tBody"))
+        }
+    </script>
+
+
+
+
+
+{% endblock %}
+
+
+{#{% load static %}#}
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Title</title>#}
+{#    <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.css' %}">#}
+{#    <style>#}
+{#    </style>#}
+{#</head>#}
+{#<body>#}
+{##}
+{#<div class="container">#}
+{##}
+{#    #}
+{#</div>#}
+{##}
+{#</body>#}
+{#</html>#}
