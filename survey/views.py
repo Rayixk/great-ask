@@ -121,7 +121,47 @@ def show_survey(request, survey_id):
 
     return render(request, "show_survey.html", context)
 
+
 def save_survey_data(request):
-    print(request.POST)
-    response = {"status":True}
+    """将新建的survey信息保存到数据库"""
+    response = {"status": True}
+    res = json.loads(request.POST.get("questions"), encoding="utf-8")
+    survey_title = res[0]
+    questions = res[1:]
+    print(res)
+    items = []
+
+    from django.db import transaction
+    try:
+        with transaction.atomic():
+            for question in questions:
+                if question["type"] == "4" or question["type"] == "5" :#填空题
+                    item = models.SurveyItem.objects.filter(title=question["name"], type=question["type"]).first()
+                    if not item:
+                        item = models.SurveyItem.objects.create(title=question["name"], type=question["type"])
+
+                else: #选择题
+                    item = models.SurveyItem.objects.create(title=question["name"], type=question["type"])
+                    item_choices=[]
+                    if question["choices"]:#说明是选择题
+                        for title in question["choices"]:
+                            choice_obj = models.Choice.objects.filter(title=title).first()
+                            if not choice_obj:
+                                choice_obj = models.Choice.objects.create(title=title)
+                            item_choices.append(choice_obj)
+
+                    if question["type"] == "3":  # 打分题
+                        item_choices = models.Choice.objects.filter(id__in=[1, 2, 3, 4, 5])
+
+                    item.choices.add(*item_choices)
+
+                items.append(item)
+
+            survey_obj = models.Survey.objects.create(title=survey_title)
+            survey_obj.items.add(*items)
+    except Exception as e:
+        print(str(e))
+        response["status"] = False
+        response["msg"] = str(e)
+
     return HttpResponse(json.dumps(response))

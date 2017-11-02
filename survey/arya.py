@@ -21,7 +21,9 @@ class SurveyConfig(sites.AryaConfig):
         type_choices = SurveyItem.type_choices
         context={
             "type_choices":type_choices,
+            "url":self.changelist_url,
         }
+        print(context)
         return render(request,"add_survey.html",context)
 
 

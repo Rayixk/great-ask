@@ -25,6 +25,17 @@
             <button class="btn btn-success" onclick="addOneItem()">添加</button>
             <button class="btn btn-primary" onclick="save()">保存</button>
         </div>
+
+        <!--问卷标题-->
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2 control-label" style="padding-right: 12px">问卷标题:</label>
+                <div class="col-sm-10" style="padding-left: 20px">
+                    <input id="surveyTitle" class="form-control" style="width: 600px;display: inline-block"> <span
+                        class="hide" style="color: red;margin-left: 10px">问卷标题不能为空</span>
+                </div>
+            </div>
+        </div>
         <table class="table table-hover">
             {% csrf_token %}
             <tbody id="tBody">
@@ -48,28 +59,30 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">类型:</label>
                             <div class="col-sm-10">
-                                <select onchange="selectChange(this)" class="form-control" style="width: 200px;display: inline-block">
+                                <select onchange="selectChange(this)" class="form-control"
+                                        style="width: 200px;display: inline-block">
                                     {% for type_choice in type_choices %}
                                         <option value="{{ type_choice.0 }}">{{ type_choice.1 }}</option>
                                     {% endfor %}
 
-{#                                    <option>1</option>#}
-{#                                    <option>2</option>#}
-{#                                    <option>3</option>#}
-{#                                    <option>4</option>#}
-{#                                    <option>5</option>#}
+                                    {#                                    <option>1</option>#}
+                                    {#                                    <option>2</option>#}
+                                    {#                                    <option>3</option>#}
+                                    {#                                    <option>4</option>#}
+                                    {#                                    <option>5</option>#}
                                 </select>
-                                <a href="javascript:void(0)" style="text-decoration: none;" onclick="addOneChoice(this)" class="add-one-choice">
+                                <a href="javascript:void(0)" style="text-decoration: none;" onclick="addOneChoice(this)"
+                                   class="add-one-choice">
                                     <span class="glyphicon glyphicon-plus"></span>添加选项
                                 </a>
                                 <span class="hide" style="margin-left: 10px;color: red">请添加选项</span>
                                 <ul style="margin-top: 20px;padding-left: 15px">
-{#                                    <li style="margin-top: 10px">内容: <input type="text">#}
-{#                                        <a onclick="removeOneChoice(this)" href="javascript:void(0)"#}
-{#                                           class="delete-one-choice">#}
-{#                                            <span class="glyphicon glyphicon-remove"></span>#}
-{#                                        </a>#}
-{#                                    </li>#}
+                                    {#                                    <li style="margin-top: 10px">内容: <input type="text">#}
+                                    {#                                        <a onclick="removeOneChoice(this)" href="javascript:void(0)"#}
+                                    {#                                           class="delete-one-choice">#}
+                                    {#                                            <span class="glyphicon glyphicon-remove"></span>#}
+                                    {#                                        </a>#}
+                                    {#                                    </li>#}
                                 </ul>
                             </div>
                         </div>
@@ -111,11 +124,11 @@
         function removeOneItem(self) {
             if ($("#tBody").children("tr").length === 1) {
                 alert("您的问卷至少得有一个问题吧!")
-            }else{
+            } else {
                 $(self).parent().parent().parent().parent().remove()
             }
         }
-        
+
         function addOneItem() {
             var $item = $("#tBody").children().last().clone();
             $item.find("select").next().show();
@@ -126,9 +139,9 @@
          * select状态改变时,右侧的添加按钮显示或者不显示
          */
         function selectChange(self) {
-            if($(self).val()==="1"|| $(self).val()==="2"){
+            if ($(self).val() === "1" || $(self).val() === "2") {
                 $(self).next().show()
-            }else{
+            } else {
                 $(self).next().hide()
                 //ul 中的li 清理掉 & 请添加选项 不显示
                 $(self).siblings("span").addClass("hide")
@@ -142,22 +155,34 @@
         function save() {
             var questions = [];
             var allHaveDone = true;//主要用来标志是否有选择题没有添加选项
-            $("textarea").each(function (k,v) {
-                var question={}
+
+            //问卷的标题必须写
+            var surveyTitle = $("#surveyTitle").val();
+            if (surveyTitle) {
+                questions.push(surveyTitle)
+                $("#surveyTitle").next().addClass("hide")
+            } else {
+                $("#surveyTitle").next().removeClass("hide");
+                allHaveDone = false
+            }
+
+            //问卷问题搜集
+            $("textarea").each(function (k, v) {
+                var question = {}
                 var questionName = $(this).val().trim()
                 var $questionTypeEle = $(this).parent().parent().next().find("select")
                 var questionType = $questionTypeEle.val()
 
-                question["name"]=questionName
-                question["type"]=questionType
+                question["name"] = questionName
+                question["type"] = questionType
+                question["choices"] = []
 
-                if(questionType==="1" ||questionType==="2"){
-                    if($questionTypeEle.siblings("ul").find("li").length===0){
+                if (questionType === "1" || questionType === "2") {
+                    if ($questionTypeEle.siblings("ul").find("li").length === 0) {
                         $questionTypeEle.siblings("span").removeClass("hide")
                         allHaveDone = false
-                    }else{
+                    } else {
                         $questionTypeEle.siblings("span").addClass("hide")
-                        question["choices"] = []
                         $questionTypeEle.siblings("ul").find("li").each(function () {
                             question["choices"].push($(this).find(":text").val())
                         })
@@ -167,17 +192,26 @@
                 questions.push(question)
             });
 
-            if(!allHaveDone){
+
+            if (!allHaveDone) {
                 return
             }
 
             $.ajax({
-                url:"/survey/save_survey_data/",
+                url: "/survey/save_survey_data/",
                 type: "POST",
-                data: {"questions":JSON.stringify(questions),"csrfmiddlewaretoken":$('[name="csrfmiddlewaretoken"]').val()},
-                dataType:"JSON",
-                success:function (data) {
-                    alert("111")
+                data: {
+                    "questions": JSON.stringify(questions),
+                    "csrfmiddlewaretoken": $('[name="csrfmiddlewaretoken"]').val()
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    if(data["status"]){
+                        //跳转
+                        location.href ="{{ url }}"
+                    }else{
+                        alert(data["msg"])
+                    }
                 }
             });
 
