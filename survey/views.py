@@ -54,7 +54,7 @@ def save_one(student, question_id, answer):
     :param answer: 该题提交答案
     :param survey_id: 调查问卷id
     """
-
+    pass
     # # 单选题
     # if SINGLE_CHOICES[:-1] in question:
     #     _, question_id = question.split(SINGLE_CHOICES[:-1])
@@ -77,44 +77,39 @@ def save_one(student, question_id, answer):
     #     models.InputRecord.objects.create(user=student, survey_id=survey_id, question_id=question_id, answer=answer[0])
 
 
-
 def save_data(request):
     response = "提交成功"
-
     student = models.Student.objects.filter(pk=request.session.get("student_id")).first()
     print(request.POST)
 
-    choice_records = []
-    input_records = []
+    try:
+        with transaction.atomic():
+            choice_records = []
+            input_records = []
 
-    for question_id in request.POST:
-        if question_id =="csrfmiddlewaretoken":
-            continue
-        answer = request.POST.getlist(question_id)
-        question_type = models.SurveyItem.objects.filter(pk=question_id).first().type
+            for question_id in request.POST:
+                if question_id == "csrfmiddlewaretoken":
+                    continue
+                answer = request.POST.getlist(question_id)
+                question_type = models.SurveyItem.objects.filter(pk=question_id).first().type
 
-        if question_type == 3 or question_type == 2:  # 多选题
-            for choice_id in answer:
-                obj = models.ChoiceRecord(user=student, question_id=question_id, answer_id=choice_id)
-                choice_records.append(obj)
-        elif question_type == 1:  # 单选题
-            obj = models.ChoiceRecord(user=student, question_id=question_id, answer_id=answer[0])
-            choice_records.append(obj)
-        elif question_type == 4 or question_type == 5:  # 填空题
-            obj = models.InputRecord(user=student, question_id=question_id, answer=answer[0])
-            input_records.append(obj)
+                if question_type == 3 or question_type == 2:  # 多选题
+                    for choice_id in answer:
+                        obj = models.ChoiceRecord(user=student, question_id=question_id, answer_id=choice_id)
+                        choice_records.append(obj)
+                elif question_type == 1:  # 单选题
+                    obj = models.ChoiceRecord(user=student, question_id=question_id, answer_id=answer[0])
+                    choice_records.append(obj)
+                elif question_type == 4 or question_type == 5:  # 填空题
+                    obj = models.InputRecord(user=student, question_id=question_id, answer=answer[0])
+                    input_records.append(obj)
 
-    #保存
-    models.ChoiceRecord.objects.bulk_create(choice_records)
-    models.InputRecord.objects.bulk_create(input_records)
-
-
-    # try:
-    #     with transaction.atomic():
-    #         for k in request.POST:
-    #             save_one(student, k, request.POST.getlist(k))
-    # except Exception as e:
-    #     response = str(e)
+            # 保存
+            models.ChoiceRecord.objects.bulk_create(choice_records)
+            models.InputRecord.objects.bulk_create(input_records)
+    except Exception as e:
+        print(str(e))
+        response = str(e)
     return response
 
 
@@ -164,15 +159,15 @@ def save_survey_data(request):
     try:
         with transaction.atomic():
             for question in questions:
-                if question["type"] == "4" or question["type"] == "5" :#填空题
+                if question["type"] == "4" or question["type"] == "5":  # 填空题
                     item = models.SurveyItem.objects.filter(title=question["name"], type=question["type"]).first()
                     if not item:
                         item = models.SurveyItem.objects.create(title=question["name"], type=question["type"])
 
-                else: #选择题
+                else:  # 选择题
                     item = models.SurveyItem.objects.create(title=question["name"], type=question["type"])
-                    item_choices=[]
-                    if question["choices"]:#说明是选择题
+                    item_choices = []
+                    if question["choices"]:  # 说明是选择题
                         for title in question["choices"]:
                             choice_obj = models.Choice.objects.filter(title=title).first()
                             if not choice_obj:
