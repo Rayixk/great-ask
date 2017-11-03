@@ -11,48 +11,64 @@
 <body>
 
 <div class="container">
-    <div style="margin-top: 50px;text-align: center"><h3>第一次问卷调查</h3></div>
+    <div style="margin-top: 50px;text-align: center"><h3>{{ survey_plus.survey_obj.title }}</h3></div>
     <div class="row ">
         <div class="col-md-8 col-md-offset-2">
-            <form>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-                </div>
+            <form method="POST">
+            {% csrf_token %}
 
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <textarea class="form-control" rows="5" id="exampleInputEmail1" placeholder="Email"></textarea>
-                </div>
+                <!--单选-->
+                {% for single_choice in survey_plus.single_choices %}
+                    <label for="exampleInputEmail1">{{ single_choice.title }}</label>
+                    <div class="form-group">
 
-                <label for="exampleInputEmail1">选择性别</label>
-                <div class="form-group">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="inlineCheckbox1" value="option1"> 1
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="inlineCheckbox2" value="option2"> 2
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
-                    </label>
-                </div>
+                        {% for choice in single_choice.choices.all %}
 
-                <label for="exampleInputEmail1">选择爱好</label>
-                <div class="form-group">
-                    <label class="radio-inline">
-                        <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 1
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 2
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3"> 3
-                    </label>
-                </div>
+                            <label class="radio-inline">
+                                <input type="radio" name="single_choice{{ single_choice.pk }}"
+                                       value="{{ choice.pk }}"> {{ choice.title }}
+                            </label>
+                        {% endfor %}
+
+                    </div>
+                {% endfor %}
+
+                <!--多选-->
+                {% for multi_choice in survey_plus.multi_choices %}
+                    <label for="exampleInputEmail1">{{ multi_choice.title }}</label>
+                    <div class="form-group">
+
+                        {% for choice in multi_choice.choices.all %}
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="multi_choice{{ multi_choice.pk }}"
+                                       value="{{ choice.pk }}"> {{ choice.title }}
+                            </label>
+                        {% endfor %}
+
+                    </div>
+                {% endfor %}
+
+                <!--input-text-->
+                {% for text_input in survey_plus.text_inputs %}
+                    <div class="form-group">
+                        <label for="text_input{{ text_input.pk }}">{{ text_input.title }}</label>
+                        <input type="text" name="text_input{{ text_input.pk }}" class="form-control" id="text_input{{ text_input.pk }}" placeholder="">
+                    </div>
+                {% endfor %}
+
+
+                {% for textarea_input in survey_plus.textarea_inputs %}
+
+                    <div class="form-group">
+                        <label for="textarea_input{{ textarea_input.pk }}">{{ textarea_input.title }}</label>
+                        <textarea class="form-control" name="textarea_input{{ textarea_input.pk }}" rows="5" id="textarea_input{{ textarea_input.pk }}" placeholder=""></textarea>
+                    </div>
+                {% endfor %}
+
 
                 <div style="text-align: center">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">提交</button>
                 </div>
             </form>
         </div>
