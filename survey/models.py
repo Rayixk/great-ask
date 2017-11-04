@@ -74,10 +74,14 @@ class MeetingRoom(models.Model):
     """会议室"""
     addr = models.CharField("会议室地点", max_length=32)
 
+    def __str__(self):
+        return self.addr
+
 
 class MeetingRoomBookList(models.Model):
     """会议室预定记录表"""
     meeting_room = models.ForeignKey(to='MeetingRoom', verbose_name='会议室')
     start_time = models.DateTimeField("开始时间")
     end_time = models.DateTimeField("结束时间")
-    for_who = models.ForeignKey(to="UserInfo", verbose_name="为谁预定")
+    user = models.ForeignKey(to="UserInfo", verbose_name="预定人",null=True,blank=True)
+    theme = models.CharField("会议主题",max_length=64,null=True,blank=True)

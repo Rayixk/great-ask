@@ -1,0 +1,103 @@
+{% extends "arya/layout.html" %}
+
+{% block css %}
+    <style>
+        .my-btn-clicked {
+            color: #333;
+            background-color: #e6e6e6;
+            border-color: #adadad;
+        }
+
+     .delete-one-choice {
+            margin-left: 10px;
+            color: #CCCACB;
+            border: none;
+            background-color: transparent
+        }
+
+    </style>
+
+{% endblock %}
+{% block content %}
+
+    <div class="container" style="margin-top: 50px">
+
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">按日期筛选:</label>
+                        <div class="col-sm-10">
+
+                            <a onclick="filterByDate(this)" class="btn btn-default">{{ book_info_obj.d1 }}</a>
+                            <a onclick="filterByDate(this)" class="btn btn-default">{{ book_info_obj.d2 }}</a>
+                            <a onclick="filterByDate(this)" class="btn btn-default">{{ book_info_obj.d3 }}</a>
+                            <a onclick="filterByDate(this)" class="btn btn-default">{{ book_info_obj.d4 }}</a>
+                            <a onclick="filterByDate(this)" class="btn btn-default">{{ book_info_obj.d5 }}</a>
+                            <a onclick="refreshFilter(this)" href="javascript:void(0)" style="border: none;background-color: transparent" class="btn btn-default">
+                                <span class="glyphicon glyphicon-repeat"></span>
+                            </a>
+
+
+                            <span class="hide" style="color: red;margin-left: 10px">问卷标题不能为空</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!--table-->
+                <table class="table table-bordered table-hover " style="margin-top: 50px;table-layout:fixed">
+                    {#                    <caption>可预定会议室列表:</caption>#}
+                    <thead>
+                    <tr>
+                        <th width="5%">&nbsp</th>
+                        <th width="15%">会议室名称</th>
+                        <th width="70%">预定情况</th>
+                        <th width="10%">预定</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>301</td>
+                        <td>3号(上午,下午),4号(上午),5号(下午),6号(上午,下午)以有预定,更多信息,请至预定详情页查看</td>
+                        <td style="padding: 4px"><a class="btn btn-success btn-sm">预定</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>301</td>
+                        <td>无</td>
+                        <td style="padding: 4px"><a class="btn btn-success btn-sm">预定</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>301</td>
+                        <td></td>
+                        <td style="padding: 4px"><a class="btn btn-success btn-sm">预定</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterByDate(self) {
+            $(self).addClass("my-btn-clicked").siblings("a").removeClass("my-btn-clicked")
+        }
+
+        function refreshFilter(self) {
+            $(self).siblings("a").removeClass("my-btn-clicked")
+        }
+    </script>
+
+
+
+
+
+
+{% endblock %}
+
+
